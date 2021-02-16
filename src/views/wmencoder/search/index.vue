@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>~~请选择配置搜索整机编码哦~~</h3>
+    <h3>~~请选择配置搜索整机编码~~</h3>
     <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
       <el-form-item label="产品机种:" prop="field_product_type">
         <el-radio-group v-model="formData.field_product_type" size="medium">
@@ -92,10 +92,11 @@
             :disabled="item.disabled">{{item.description}}</el-radio>
         </el-radio-group>
       </el-form-item>
+      <hr width="97%" />
       <el-form-item label="可选配置项:" prop="field_optional">
         <el-checkbox-group v-model="formData.field_optional" size="medium">
           <el-checkbox v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
-            :disabled="item.disabled">{{item.description+'=>'+item.category}}</el-checkbox>
+            :disabled="item.disabled">{{item.description}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
 
@@ -137,7 +138,7 @@ export default {
   data() {
     return {
       formData: {
-        field_product_type: "L:山推",
+        field_product_type: "L:山推牌",
         field_trans_style: "A:液力传动",
         field_tonnage: "5:5吨",
         field_wheel: "8:长轴距_8",
@@ -152,7 +153,7 @@ export default {
         field_bucket: "B:标准斗",
         field_operate_mode: "J:非先导双手柄",
         field_sale: "0:国内",
-        field_optional: ['空调']
+        field_optional: []
       },
       rules: {
         field_product_type: [{
@@ -231,7 +232,7 @@ export default {
           trigger: 'change'
         }],
         field_optional: [{
-          required: true,
+          required: false,
           type: 'array',
           message: '请至少选择一个field_optional',
           trigger: 'change'

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>~~请选择配置生成整机编码哦~~</h3>
+    <h3>~~请选择配置生成整机编码~~</h3>
     <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
       <el-form-item label="产品机种:" prop="field_product_type">
         <el-radio-group v-model="formData.field_product_type" size="medium">
@@ -95,16 +95,24 @@
       <hr width="97%"/>
 
       <el-form-item label="可选配置项:"></el-form-item>
-      <el-form-item v-for="n in 4" :label="n.toString()+' 类:'">
-        <el-radio-group v-model="formData.field_optional[n-1]" size="medium">
-          <el-radio v-for="(item, index) in field_optionalOptions" :key="index" v-if="item.category == n.toString()"
-            :label="item.description" :disabled="item.disabled">{{item.description}}</el-radio>
+      <el-form-item label="无(1) 类:" prop="checkbox_optional">
+        <el-checkbox-group v-model="formData.checkbox_optional" size="medium">
+          <el-checkbox v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
+           v-if="item.category == '1'" :disabled="item.disabled">{{item.description}}</el-checkbox>
+        </el-checkbox-group>
+
+      </el-form-item>
+      <el-form-item v-for="n in optional_max_category" v-if="n > 1" :label="n.toString()+' 类:'" prop="radio_optional">
+        <el-radio-group v-model="formData.radio_optional[n-2]" size="medium">
+          <el-radio v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
+            v-if="item.category == n.toString()" :disabled="item.disabled">{{item.description}}</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item size="medium">
         <el-button type="primary" @click="getLoaderInfo">新增整机编码</el-button>
         <el-button type="primary" @click="resetForm">恢复默认配置</el-button>
+        <el-button type="primary" @click="resetOptionalForm">重置可选配置</el-button>
       </el-form-item>
     </el-form>
 
@@ -133,7 +141,7 @@
 </div>
 </template>
 <script>
-  import { getWmCode,getConfigInfoOf } from "@/api/wmencoder/generate";
+  import { getWmCode,getConfigInfoOf,getOptionalMaxCategory } from "@/api/wmencoder/generate";
 
 export default {
   components: {},
@@ -141,7 +149,7 @@ export default {
   data() {
     return {
       formData: {
-        field_product_type: "L:山推",
+        field_product_type: "L:山推牌",
         field_trans_style: "A:液力传动",
         field_tonnage: "5:5吨",
         field_wheel: "8:长轴距_8",
@@ -156,7 +164,9 @@ export default {
         field_bucket: "B:标准斗",
         field_operate_mode: "J:非先导双手柄",
         field_sale: "0:国内",
-        field_optional: ['空调']
+        field_optional: [],
+        checkbox_optional:[],
+        radio_optional:[]
       },
       rules: {
         field_product_type: [{
@@ -235,7 +245,7 @@ export default {
           trigger: 'change'
         }],
         field_optional: [{
-          required: true,
+          required: false,
           type: 'array',
           message: '请至少选择一个field_optional',
           trigger: 'change'
@@ -257,6 +267,8 @@ export default {
       field_operate_modeOptions: [],
       field_saleOptions: [],
       field_optionalOptions: [],
+
+      optional_max_category:undefined,
 
       field_optionalProps: {
         "multiple": true
@@ -299,14 +311,22 @@ export default {
         this.field_saleOptions=res.saleList;
         this.field_optionalOptions=res.optionalList;
       });
+      getOptionalMaxCategory("selectMaxCategory").then(res=>{
+        console.log(res);
+        this.optional_max_category = res;
+      });
       console.log("生成页面完成配置信息获取！");
     },
     resetForm() {
-      this.$refs['elForm'].resetFields()
+      this.$refs['elForm'].resetFields();
+    },
+    resetOptionalForm(){
+      this.formData.checkbox_optional.splice(0);
+      this.formData.radio_optional.splice(0);
     },
     generateCode() {
       this.$refs['elForm'].validate(valid => {
-        if (!valid) return
+        if (!valid) return;
         // TODO 提交表单
         getWmCode("wmCode",this.formData).then(res=>{
           console.log(res);
@@ -321,7 +341,13 @@ export default {
     },
     getLoaderInfo() {
       this.$refs['elForm'].validate(valid => {
-        if (!valid) return
+        if (!valid) return;
+        // console.log(this.formData.checkbox_optional);
+        // console.log(this.formData.radio_optional);
+        this.formData.field_optional = this.formData.checkbox_optional
+        .concat(this.formData.radio_optional);
+        this.formData.field_optional.remove(null);
+        // console.log(this.formData.field_optional);
         getWmCode("loaderInfo",this.formData).then(res=>{
           console.log(res);
           if(res==''){
@@ -330,6 +356,7 @@ export default {
             this.field_loaderInfo_display = res.loaderInfo;
           }
         });
+
         });
         this.dialogFormVisible = true;
     }

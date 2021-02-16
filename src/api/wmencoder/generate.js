@@ -17,7 +17,10 @@ export function getWmCode(query,data){
   })
 }
 
-//可选配置项表单数组处理
-export function handleOptional(optionalArry){
-  
+//查询optional表中category字段最大值
+export function getOptionalMaxCategory(query){
+  return request({
+    url: '/wmencoder/generate/'+query,
+    method: 'get'
+  })
 }
