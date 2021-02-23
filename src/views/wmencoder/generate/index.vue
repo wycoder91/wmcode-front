@@ -95,14 +95,15 @@
       <hr width="97%"/>
 
       <el-form-item label="可选配置项:"></el-form-item>
-      <el-form-item label="无(1) 类:" prop="checkbox_optional">
+      <el-form-item label="任意组合类:" prop="checkbox_optional">
         <el-checkbox-group v-model="formData.checkbox_optional" size="medium">
           <el-checkbox v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
            v-if="item.category == '1'" :disabled="item.disabled">{{item.description}}</el-checkbox>
         </el-checkbox-group>
-
       </el-form-item>
-      <el-form-item v-for="n in optional_max_category" v-if="n > 1" :label="n.toString()+' 类:'" prop="radio_optional">
+      
+      <el-form-item label="互斥类:"></el-form-item>
+      <el-form-item v-for="n in optional_max_category" v-if="n > 1" :label="(m=n-1).toString()+' 类:'" prop="radio_optional">
         <el-radio-group v-model="formData.radio_optional[n-2]" size="medium">
           <el-radio v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
             v-if="item.category == n.toString()" :disabled="item.disabled">{{item.description}}</el-radio>
@@ -141,7 +142,7 @@
 </div>
 </template>
 <script>
-  import { getWmCode,getConfigInfoOf,getOptionalMaxCategory } from "@/api/wmencoder/generate";
+  import { getWmCode,getConfigInfoOf,getOptionalMaxCategory,removeArrReInfo } from "@/api/wmencoder/generate";
 
 export default {
   components: {},
@@ -342,12 +343,12 @@ export default {
     getLoaderInfo() {
       this.$refs['elForm'].validate(valid => {
         if (!valid) return;
-        // console.log(this.formData.checkbox_optional);
-        // console.log(this.formData.radio_optional);
+        //console.log(this.formData.checkbox_optional);
+        //console.log(this.formData.radio_optional);
         this.formData.field_optional = this.formData.checkbox_optional
         .concat(this.formData.radio_optional);
-        this.formData.field_optional.remove(null);
-        // console.log(this.formData.field_optional);
+        removeArrReInfo(this.formData.field_optional,null);
+        //console.log(this.formData.field_optional);
         getWmCode("loaderInfo",this.formData).then(res=>{
           console.log(res);
           if(res==''){

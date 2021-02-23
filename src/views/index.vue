@@ -25,9 +25,6 @@ export default {
 </script>
 
 <style>
-    .home_backcolor {
-      background-color: #FFFFFF;
-    }
 
     .el-carousel__item h3 {
         color: #475669;
