@@ -156,7 +156,7 @@
         >重置可选配置</el-button>
       </el-col>
     </el-row>
-    
+
     <!-- Form -->
     <el-dialog title="新增整机编码" width="60%" :visible.sync="dialogFormVisible">
       <el-dialog
@@ -367,6 +367,7 @@ export default {
     },
     resetForm() {
       this.$refs['elForm'].resetFields();
+      this.formData.radio_optional.splice(0);
     },
     resetOptionalForm(){
       this.formData.checkbox_optional.splice(0);
