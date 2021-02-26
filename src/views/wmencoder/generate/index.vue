@@ -1,6 +1,7 @@
 <template>
   <div>
     <h3>~~请选择配置生成整机编码~~</h3>
+    
     <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
       <el-form-item label="产品机种:" prop="field_product_type">
         <el-radio-group v-model="formData.field_product_type" size="medium">
@@ -8,6 +9,7 @@
             :disabled="item.disabled">{{item.description}}</el-radio>
         </el-radio-group>
       </el-form-item>
+      
       <el-form-item label="传动方式:" prop="field_trans_style">
         <el-radio-group v-model="formData.field_trans_style" size="medium">
           <el-radio v-for="(item, index) in field_trans_styleOptions" :key="index" :label="item.codeNum+':'+item.description"
@@ -94,29 +96,67 @@
       </el-form-item>
       <hr width="97%"/>
 
-      <el-form-item label="可选配置项:"></el-form-item>
+      <!-- <el-form-item label="可选配置项:"></el-form-item> -->
+      <h4>可选配置项:</h4>
+      
+      
       <el-form-item label="任意组合类:" prop="checkbox_optional">
         <el-checkbox-group v-model="formData.checkbox_optional" size="medium">
           <el-checkbox v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
            v-if="item.category == '1'" :disabled="item.disabled">{{item.description}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      
-      <el-form-item label="互斥类:"></el-form-item>
-      <el-form-item v-for="n in optional_max_category" v-if="n > 1" :label="(m=n-1).toString()+' 类:'" prop="radio_optional">
-        <el-radio-group v-model="formData.radio_optional[n-2]" size="medium">
+        
+    </el-form>
+    <div class="container">
+      <h5 style="margin-left:40px;margin-bottom:10px;display: inline;">互斥类:</h5>
+      <button @click="isActive = !isActive" style="margin-left:18px;margin-bottom:10px;">展开/折叠</button>
+      <collapse>
+       <div style="margin-left:100px;" class="container" v-show="isActive">  
+         <el-form>
+         <el-form-item  v-for="n in optional_max_category" v-if="n > 1" :label="(m=n-1).toString()+' 类:'" prop="radio_optional">
+          <el-radio-group v-model="formData.radio_optional[n-2]" size="medium">
           <el-radio v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
             v-if="item.category == n.toString()" :disabled="item.disabled">{{item.description}}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-
-      <el-form-item size="medium">
+          </el-radio-group>
+         </el-form-item>
+         </el-form>
+       </div>
+      </collapse>
+      </div> 
+      <!-- <el-form-item size="medium">
         <el-button type="primary" @click="getLoaderInfo">新增整机编码</el-button>
         <el-button type="primary" @click="resetForm">恢复默认配置</el-button>
         <el-button type="primary" @click="resetOptionalForm">重置可选配置</el-button>
-      </el-form-item>
-    </el-form>
-
+      </el-form-item> -->
+    
+    <el-row :gutter="10" class="mb8" style="margin-left:100px;">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+		  
+          @click="getLoaderInfo"
+         
+        >新增整机编码</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+		  
+          @click="resetForm"
+          
+        >恢复默认配置</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+		 
+          @click="resetOptionalForm"
+          
+        >重置可选配置</el-button>
+      </el-col>
+    </el-row>
+    
     <!-- Form -->
     <el-dialog title="新增整机编码" width="60%" :visible.sync="dialogFormVisible">
       <el-dialog
@@ -141,14 +181,17 @@
 
 </div>
 </template>
-<script>
-  import { getWmCode,getConfigInfoOf,getOptionalMaxCategory,removeArrReInfo } from "@/api/wmencoder/generate";
 
+<script>
+  import collapse from "@/api/wmencoder/collapse.js";
+  import { getWmCode,getConfigInfoOf,getOptionalMaxCategory,removeArrReInfo } from "@/api/wmencoder/generate";
+  
 export default {
-  components: {},
+  components: {collapse},
   props: [],
   data() {
     return {
+      isActive: false,
       formData: {
         field_product_type: "L:山推牌",
         field_trans_style: "A:液力传动",
@@ -168,7 +211,9 @@ export default {
         field_optional: [],
         checkbox_optional:[],
         radio_optional:[]
+        
       },
+        
       rules: {
         field_product_type: [{
           required: true,
@@ -283,6 +328,7 @@ export default {
       }
     }
   },
+  
   computed: {},
   watch: {},
   created() {
@@ -291,6 +337,7 @@ export default {
   mounted() {
 
   },
+
   methods: {
     configInfoInit(){
       getConfigInfoOf("configInfo").then(res=>{
@@ -362,6 +409,8 @@ export default {
         this.dialogFormVisible = true;
     }
   }
+ 
+
 }
 
 </script>
