@@ -1,6 +1,7 @@
 <template>
   <div>
     <h3>~~请选择配置搜索整机编码~~</h3>
+    <h4>标准配置项:</h4>
     <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
       <el-form-item label="产品机种:" prop="field_product_type">
         <el-radio-group v-model="formData.field_product_type" size="medium">
@@ -93,7 +94,8 @@
         </el-radio-group>
       </el-form-item>
       <hr width="97%" />
-      <el-form-item label="可选配置项:" prop="field_optional">
+      <h4>可选配置项:</h4>
+      <el-form-item label="任意组合:" prop="field_optional">
         <el-checkbox-group v-model="formData.field_optional" size="medium">
           <el-checkbox v-for="(item, index) in field_optionalOptions" :key="index" :label="item.description"
             :disabled="item.disabled">{{item.description}}</el-checkbox>
